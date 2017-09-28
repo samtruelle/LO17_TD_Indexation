@@ -104,3 +104,4 @@ ENV/
 *.zip
 *.xml
 *.csv
+.idea/*

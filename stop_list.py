@@ -14,12 +14,14 @@ tf = dict()  # pour chaque article, mot => nb occurence mot
 for bulletin in corpus['bulletin']:
     N += 1
     interesting_words = \
-        sorted(bulletin['titre'].text.split(" ") +
-               bulletin['texte'].text.split(" "))
+        bulletin['titre'].text.split(" ") + bulletin['texte'].text.split(" ")
     interesting_words = \
-        [word.strip().lower()
-         for word in interesting_words
-         if word != '']
+        ["".join(list(filter(str.isalnum, word)))
+         for word in interesting_words]
+    interesting_words = \
+        sorted([word.strip().lower()
+                for word in interesting_words
+                if word != ''])
     tf[bulletin['fichier']] = \
         {key: len(list(group))
          for key, group in
@@ -69,9 +71,8 @@ with open('fichier2.csv', 'w+') as csv_fdesc:
 
     csv_writer.writeheader()
 
-    for fichier, article in tf.items():
-        for word, nb_occurence in idf.items():
-            csv_writer.writerow({'mot_i': word, 'idf_i': nb_occurence})
+    for word, nb_occurence in idf.items():
+        csv_writer.writerow({'mot_i': word, 'idf_i': nb_occurence})
 
 with open('fichier3.csv', 'w+') as csv_fdesc:
     fieldnames = ['nom_du_fichier_article', 'tf', 'idf_i']

@@ -6,6 +6,8 @@ from zipfile import ZipFile
 from lxml import html
 from lxml.html.clean import clean_html
 
+from make_stop_list import get_interesting_words, remove_words
+
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -82,13 +84,17 @@ if __name__ == "__main__":
     for bulletin in parse_bulletins('./BULLETINS_LO17.zip'):
         logger.info("Writing in xml content of %s.", bulletin.fichier)
 
+        interesting_words = set(list(get_interesting_words()))
+
         bulletin_xml_element = cElementTree.SubElement(root, "bulletin")
         cElementTree.SubElement(bulletin_xml_element, "fichier").text = bulletin.fichier
         cElementTree.SubElement(bulletin_xml_element, "numero").text = bulletin.numero
         cElementTree.SubElement(bulletin_xml_element, "date").text = bulletin.date
         cElementTree.SubElement(bulletin_xml_element, "rubrique").text = bulletin.rubrique
-        cElementTree.SubElement(bulletin_xml_element, "titre").text = bulletin.titre
-        cElementTree.SubElement(bulletin_xml_element, "texte").text = bulletin.texte
+        cElementTree.SubElement(bulletin_xml_element, "titre").text = \
+            remove_words(bulletin.titre, interesting_words)
+        cElementTree.SubElement(bulletin_xml_element, "texte").text = \
+            remove_words(bulletin.texte, interesting_words)
         images_xml_element = cElementTree.SubElement(bulletin_xml_element, "images")
         for image in bulletin.images:
             image_xml_element = cElementTree.SubElement(images_xml_element, "image")
