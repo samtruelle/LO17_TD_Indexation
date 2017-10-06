@@ -26,7 +26,8 @@ Image = namedtuple("Image", ["urlImage", "legendeImage"])
 def parse_bulletins(archive_path):
     with ZipFile(archive_path) as zip_file:
         filelist = [file.filename for file in zip_file.filelist
-                    if 'BULLETINS' in file.filename and file.filename.endswith(".htm")]
+                    if 'BULLETINS' in file.filename
+                    and file.filename.endswith(".htm")]
 
         logger.info("%s files in archive %s", len(filelist), archive_path)
 
@@ -39,12 +40,18 @@ def parse_bulletins(archive_path):
                 date, rubrique = tree.xpath('//*[@class="style42"]/text()')
                 date = date.strip()
                 rubrique = rubrique.strip()
-                text_content = "\n".join([el.text_content().strip()
-                                          for el in tree.xpath('//*[@width="452"]//*[@class="style95"]')[:-1]])
-                assert all([alt == '' or alt == 'spacer' for alt in tree.xpath('//img/@alt')])
+                text_content = \
+                    "\n".join(
+                        [el.text_content().strip()
+                         for el in
+                         tree.xpath('//*[@width="452"]//*[@class="style95"]')[
+                         :-1]])
+                assert all([alt == '' or alt == 'spacer'
+                            for alt in tree.xpath('//img/@alt')])
                 # img_legends = tree.xpath('//img/@alt')
-                img_legends = [img_legend.text_content().strip() for img_legend in
-                                tree.xpath('//*[@class="style21"]')[1:]]
+                img_legends = [img_legend.text_content().strip()
+                               for img_legend in
+                               tree.xpath('//*[@class="style21"]')[1:]]
                 i = 0
                 images = []
                 for url_img in tree.xpath('//img/@src'):
@@ -54,14 +61,18 @@ def parse_bulletins(archive_path):
                         except IndexError:
                             img_legend = ""
 
-                        images.append(Image(urlImage=url_img.strip(), legendeImage=img_legend))
+                        images.append(Image(urlImage=url_img.strip(),
+                                            legendeImage=img_legend))
                         i += 1
                 nb_unused_images = len(tree.xpath('//img')) - len(images)
                 assert nb_unused_images == 102
 
-                info_contact = tree.xpath('//*[@class="style85"]')[3].text_content().strip()
+                info_contact = \
+                    tree.xpath('//*[@class="style85"]')[
+                        3].text_content().strip()
 
                 numero = tree.xpath('//*[@class="style32"]/text()')[0].strip()
+
                 yield Bulletin(
                     fichier=file_path,
                     numero=numero,
@@ -75,8 +86,9 @@ def parse_bulletins(archive_path):
 
 
 if __name__ == "__main__":
+    use_stop_list = False
 
-    logger.info("Starting to parse file.")
+    logger.info("Starting to parse file. use_stop_list", use_stop_list)
 
     root = cElementTree.Element("corpus")
 
@@ -84,23 +96,39 @@ if __name__ == "__main__":
     for bulletin in parse_bulletins('./BULLETINS_LO17.zip'):
         logger.info("Writing in xml content of %s.", bulletin.fichier)
 
-        interesting_words = set(list(get_interesting_words()))
+        if use_stop_list:
+            interesting_words = set(list(get_interesting_words()))
 
         bulletin_xml_element = cElementTree.SubElement(root, "bulletin")
-        cElementTree.SubElement(bulletin_xml_element, "fichier").text = bulletin.fichier
-        cElementTree.SubElement(bulletin_xml_element, "numero").text = bulletin.numero
-        cElementTree.SubElement(bulletin_xml_element, "date").text = bulletin.date
-        cElementTree.SubElement(bulletin_xml_element, "rubrique").text = bulletin.rubrique
-        cElementTree.SubElement(bulletin_xml_element, "titre").text = \
-            remove_words(bulletin.titre, interesting_words)
-        cElementTree.SubElement(bulletin_xml_element, "texte").text = \
-            remove_words(bulletin.texte, interesting_words)
-        images_xml_element = cElementTree.SubElement(bulletin_xml_element, "images")
+        cElementTree.SubElement(bulletin_xml_element, "fichier").text = \
+            bulletin.fichier
+        cElementTree.SubElement(bulletin_xml_element, "numero").text = \
+            bulletin.numero
+        cElementTree.SubElement(bulletin_xml_element, "date").text = \
+            bulletin.date
+        cElementTree.SubElement(bulletin_xml_element, "rubrique").text = \
+            bulletin.rubrique
+        if use_stop_list:
+            cElementTree.SubElement(bulletin_xml_element, "titre").text = \
+                remove_words(bulletin.titre, interesting_words)
+            cElementTree.SubElement(bulletin_xml_element, "texte").text = \
+                remove_words(bulletin.texte, interesting_words)
+        else:
+            cElementTree.SubElement(bulletin_xml_element, "titre").text = \
+                bulletin.titre
+            cElementTree.SubElement(bulletin_xml_element, "texte").text = \
+                bulletin.texte
+        images_xml_element = \
+            cElementTree.SubElement(bulletin_xml_element, "images")
         for image in bulletin.images:
-            image_xml_element = cElementTree.SubElement(images_xml_element, "image")
-            cElementTree.SubElement(image_xml_element, "urlImage").text = image.urlImage
-            cElementTree.SubElement(image_xml_element, "legendeImage").text = image.legendeImage
-        cElementTree.SubElement(bulletin_xml_element, "contact").text = bulletin.contact
+            image_xml_element = \
+                cElementTree.SubElement(images_xml_element, "image")
+            cElementTree.SubElement(image_xml_element, "urlImage").text = \
+                image.urlImage
+            cElementTree.SubElement(image_xml_element, "legendeImage").text = \
+                image.legendeImage
+        cElementTree.SubElement(bulletin_xml_element, "contact").text = \
+            bulletin.contact
 
         nb_bulletins += 1
 

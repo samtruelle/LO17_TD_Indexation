@@ -8,6 +8,7 @@ dependencies:
 - libxslt=1.1.29=0
 - lxml=3.8.0=py35_0
 - openssl=1.0.2l=0
+- pandas=0.20.3=py35_0
 - pip=9.0.1=py35_1
 - python=3.5.4=0
 - readline=6.2=2

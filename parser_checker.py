@@ -1,4 +1,4 @@
-from main_parser import parse_bulletins
+from bulletins_to_xml import parse_bulletins
 
 
 def get_available_rubriques():

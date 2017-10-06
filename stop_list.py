@@ -75,14 +75,14 @@ with open('fichier2.csv', 'w+') as csv_fdesc:
         csv_writer.writerow({'mot_i': word, 'idf_i': nb_occurence})
 
 with open('fichier3.csv', 'w+') as csv_fdesc:
-    fieldnames = ['nom_du_fichier_article', 'tf', 'idf_i']
+    fieldnames = ['nom_du_fichier_article', 'mot_i', 'tf_idf_i_j']
     csv_writer = csv.DictWriter(csv_fdesc, fieldnames=fieldnames)
 
     csv_writer.writeheader()
 
     for fichier, article in tfid.items():
-        for word, idf_i in article.items():
+        for word, tf_x_idf_i_j in article.items():
             csv_writer.writerow(
                 {'nom_du_fichier_article': fichier,
-                 'tf': word,
-                 'idf_i': idf_i})
+                 'mot_i': word,
+                 'tf_idf_i_j': tf_x_idf_i_j})

@@ -20,3 +20,5 @@ def remove_words(s, interesting_words):
     return " ".join(final_s)
 
 
+if __name__ == '__main__':
+    print("\n".join(sorted(list(get_interesting_words()))))

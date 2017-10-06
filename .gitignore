@@ -105,3 +105,4 @@ ENV/
 *.xml
 *.csv
 .idea/*
+/.Rhistory
