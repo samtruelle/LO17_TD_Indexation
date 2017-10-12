@@ -7,9 +7,15 @@ python /home/tdancois/PycharmProjects/LO17_TD_Indexation/main_parser.py
 ```
 List of useful commands for indexation:
 ```
-perl segmente_TT.pl corpus_P17_ss_balise.xml | sort | uniq | perl successeurs_P16.pl > /tmp/successeurs.txt
-perl filtronc_P16.pl -v /tmp/successeurs.txt /tmp/successeurs2.txt
-cat corpus_P17_ss_balise.xml| perl index.pl titre
+LANG=C
+python make_stop_list.py | grep -v texte | perl perl_scripts/newcreeFiltre.pl > /tmp/filtre.pl
+perl /tmp/filtre.pl corpus_P17_ss_balise.xml > corpus_P17_ss_balise_filtre.xml
+
+perl perl_scripts/segmente_TT.pl corpus_P17_ss_balise_filtre.xml | sort | uniq | perl perl_scripts/successeurs_P16.pl > /tmp/successeurs.txt
+perl perl_scripts/filtronc_P16.pl -v /tmp/successeurs.txt /tmp/successeurs2.txt
+
+cat corpus_P17_ss_balise_filtre.xml | perl perl_scripts/index.pl titre
+perl perl_scripts/segmente_TT.pl -f -r -n corpus_P17_ss_balise_filtre.xml | perl perl_scripts/indexTexte.pl
 ```
 
 # Compile report

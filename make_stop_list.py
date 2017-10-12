@@ -3,12 +3,14 @@ import csv
 THIRD_Q_THRESHOLD = 2.513
 
 
-def get_interesting_words():
+def get_interesting_words(inverse=False):
     with open('fichier2.csv') as fdesc:
         csv_reader = csv.DictReader(fdesc, delimiter=',')
 
         for row in csv_reader:
-            if float(row['idf_i']) >= THIRD_Q_THRESHOLD:
+            if inverse and float(row['idf_i']) <= THIRD_Q_THRESHOLD:
+                yield row['mot_i']
+            if not inverse and float(row['idf_i']) >= THIRD_Q_THRESHOLD:
                 yield row['mot_i']
 
 
@@ -21,4 +23,5 @@ def remove_words(s, interesting_words):
 
 
 if __name__ == '__main__':
-    print("\n".join(sorted(list(get_interesting_words()))))
+    # print("\n".join(sorted(list(get_interesting_words()))))
+    print("\n".join(sorted(list(get_interesting_words(inverse=True)))))
