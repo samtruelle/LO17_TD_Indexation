@@ -112,4 +112,15 @@ Une fois que notre stop-list a été créée nous avons pu recréer un fichier X
 \subsection{Création des fichiers inverses}
 % TODO: décrire les pipes effectués
 
+\section{Correcteur orthographique}
+Au sein de cette itération, nous avons mis en place un correcteur ortographique en associant un lemme à chaque mot d'une phrase saisie. Pour cela nous avons créé une classe Lexique qui charge un lexique de lemmes lors de son instanciation. La structure de données utilisée pour le lexique en tant que tel est un table de hashing associant à chaque mot son lemme, avec une recherche en $O(n)$, avec $n$ le nombre de mots dans la table.
+
+Comme précedemment, nous avons réimplémenté des scripts en Python mais en conservant une architecture souple orientée objet. Autrement dit les concepts sont les mêmes mais dans un langage différent.
+
+Si un mot n'est pas disponible dans le lexique, alors le lemme du mot le plus suffisamment ressemblant est retourné. Pour quantifier cette "ressemblance", nous avons mis en place un algorithme de proximité et un algorithme de calcul de distance de Levenshtein. Ces deux algorithmes ont été implémentées au sein de la classe en tant que méthodes.
+
+L'algorithme de proximité est très simple. Pour deux mots dont on souhaite calculer la proximité, on accorde un point par lettre identique à la même position dans les mots. Nous ne considérons que les proximités des mots du lexique supérieurs à 3 lettres, limite fixée en attribut de la classe.
+
+% TODO: description distance de Levenshtein
+
 \end{document}
